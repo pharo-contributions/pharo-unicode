@@ -1,6 +1,9 @@
 "
 The Pharo Unicode project.
 
+	ConfigurationOfUnicode load.
+	ConfigurationOfUnicode loadBleedingEdge.
+	
 Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
@@ -252,7 +255,7 @@ ConfigurationOfUnicode >> version2: spec [
 		spec
 			blessing: #release;
 			
-			package: 'Unicode-Character-Data' with: 'Unicode-Character-Data-SvenVanCaekenberghe.3';
+			package: 'Unicode-Character-Data' with: 'Unicode-Character-Data-SvenVanCaekebenberghe.3';
 			package: 'Unicode-Stream-Support' with: 'Unicode-Stream-Support-SvenVanCaekenberghe.1';
 			package: 'Unicode-Casing' with: 'Unicode-Casing-SvenVanCaekenberghe.1';
 			package: 'Unicode-Normalization' with: 'Unicode-Normalization-SvenVanCaekenberghe.1';
@@ -270,7 +273,7 @@ ConfigurationOfUnicode >> version3: spec [
 		spec
 			blessing: #release;
 			
-			package: 'Unicode-Character-Data' with: 'Unicode-Character-Data-SvenVanCaekenberghe.4';
+			package: 'Unicode-Character-Data' with: 'Unicode-Character-Data-SvenVanCaekebenberghe.4';
 			package: 'Unicode-Stream-Support' with: 'Unicode-Stream-Support-SvenVanCaekenberghe.1';
 			package: 'Unicode-Casing' with: 'Unicode-Casing-SvenVanCaekenberghe.1';
 			package: 'Unicode-Normalization' with: 'Unicode-Normalization-SvenVanCaekenberghe.2';
