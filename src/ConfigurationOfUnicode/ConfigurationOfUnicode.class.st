@@ -199,7 +199,7 @@ ConfigurationOfUnicode >> project [
 ConfigurationOfUnicode >> stable: spec [
 	<symbolicVersion: #'stable'>
 	
-	spec for: #common version: '2'
+	spec for: #common version: '3'
 ]
 
 { #category : #versions }
@@ -225,6 +225,24 @@ ConfigurationOfUnicode >> version2: spec [
 			package: 'Unicode-Stream-Support' with: 'Unicode-Stream-Support-SvenVanCaekenberghe.1';
 			package: 'Unicode-Casing' with: 'Unicode-Casing-SvenVanCaekenberghe.1';
 			package: 'Unicode-Normalization' with: 'Unicode-Normalization-SvenVanCaekenberghe.1';
+
+			package: 'Unicode-Tests-Character-Data' with: 'Unicode-Tests-Character-Data-SvenVanCaekenberghe.1';
+			package: 'Unicode-Tests-Casing' with: 'Unicode-Tests-Casing-SvenVanCaekenberghe.1';
+			package: 'Unicode-Tests-Normalization' with: 'Unicode-Tests-Normalization-SvenVanCaekenberghe.1' ]
+]
+
+{ #category : #versions }
+ConfigurationOfUnicode >> version3: spec [
+	<version: '3' imports: #('2-baseline')>
+	
+	spec for: #common do: [
+		spec
+			blessing: #release;
+			
+			package: 'Unicode-Character-Data' with: 'Unicode-Character-Data-SvenVanCaekenberghe.4';
+			package: 'Unicode-Stream-Support' with: 'Unicode-Stream-Support-SvenVanCaekenberghe.1';
+			package: 'Unicode-Casing' with: 'Unicode-Casing-SvenVanCaekenberghe.1';
+			package: 'Unicode-Normalization' with: 'Unicode-Normalization-SvenVanCaekenberghe.2';
 
 			package: 'Unicode-Tests-Character-Data' with: 'Unicode-Tests-Character-Data-SvenVanCaekenberghe.1';
 			package: 'Unicode-Tests-Casing' with: 'Unicode-Tests-Casing-SvenVanCaekenberghe.1';
