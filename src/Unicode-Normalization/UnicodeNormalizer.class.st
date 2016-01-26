@@ -56,7 +56,7 @@ UnicodeNormalizer >> isNFC: string [
 	
 	"Latin1 strings are always in NFC"
 	^ string isByteString or: [ 
-		(NeoUnicodeCharacterData normalizationQuickCheck: #NFC_QC forString: string) = #Y ]
+		(UnicodeCharacterData normalizationQuickCheck: #NFC_QC forString: string) = #Y ]
 ]
 
 { #category : #testing }
@@ -65,7 +65,7 @@ UnicodeNormalizer >> isNFD: string [
 
 	"ASCII strings are always in NFD"
 	^ (string isByteString and: [ string isAsciiString ])
-		or: [ (NeoUnicodeCharacterData normalizationQuickCheck: #NFD_QC forString: string) = #Y ]
+		or: [ (UnicodeCharacterData normalizationQuickCheck: #NFD_QC forString: string) = #Y ]
 ]
 
 { #category : #testing }
@@ -74,7 +74,7 @@ UnicodeNormalizer >> isNFKC: string [
 
 	"ASCII strings are always in NFKC"
 	^ (string isByteString and: [ string isAsciiString ])
-		or: [ (NeoUnicodeCharacterData normalizationQuickCheck: #NFKC_QC forString: string) = #Y ]
+		or: [ (UnicodeCharacterData normalizationQuickCheck: #NFKC_QC forString: string) = #Y ]
 ]
 
 { #category : #testing }
@@ -83,7 +83,7 @@ UnicodeNormalizer >> isNFKD: string [
 
 	"ASCII strings are always in NFKD"
 	^ (string isByteString and: [ string isAsciiString ])
-		or: [ (NeoUnicodeCharacterData normalizationQuickCheck: #NFKD_QC forString: string) = #Y ]
+		or: [ (UnicodeCharacterData normalizationQuickCheck: #NFKD_QC forString: string) = #Y ]
 ]
 
 { #category : #public }

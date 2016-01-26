@@ -17,5 +17,5 @@ UnicodeNFDReadStream >> addMappingFor: codePoint [
 		ifTrue: [ 
 			ucd decompositionMappingDo: [ :each | self addMappingFor: each ] ]
 		ifFalse: [ 
-			self add: codePoint cccOrderedTo: buffer ]
+			self addToBufferCccOrdered: codePoint ]
 ]

@@ -25,22 +25,6 @@ UnicodeDecomposingReadStream class >> on: codePointReadStream [
 ]
 
 { #category : #private }
-UnicodeDecomposingReadStream >> add: codePoint cccOrderedTo: buffer [
-	| ccc index stop otherCCC |
-	ccc := [ codePoint unicodeCharacterData ccc ] on: NotFound do: [ 0 ].
-	index := buffer size.
-	ccc = 0 
-		ifFalse: [
-			stop := false.
-			[ index > 0 & stop not ] whileTrue: [ 
-				otherCCC := [ (buffer at: index) unicodeCharacterData ccc ] on: NotFound do: [ 0 ].
-				ccc < otherCCC
-					ifTrue: [ index := index - 1 ]
-					ifFalse: [ stop := true ] ] ].
-	buffer add: codePoint afterIndex: index
-]
-
-{ #category : #private }
 UnicodeDecomposingReadStream >> addMappingFor: codePoint [
 	"Recursively expand codePoint to buffer"
 	self subclassResponsibility
@@ -55,6 +39,22 @@ UnicodeDecomposingReadStream >> addNonStarters [
 		([ input peek unicodeCharacterData isStarter not ] on: NotFound do: [ false ])
 			ifTrue: [ self addMappingFor: input next ]
 			ifFalse: [ stop := true ] ]
+]
+
+{ #category : #private }
+UnicodeDecomposingReadStream >> addToBufferCccOrdered: codePoint [
+	| ccc index stop otherCCC |
+	ccc := [ codePoint unicodeCharacterData ccc ] on: NotFound do: [ 0 ].
+	index := buffer size.
+	ccc = 0 
+		ifFalse: [
+			stop := false.
+			[ index > 0 & stop not ] whileTrue: [ 
+				otherCCC := [ (buffer at: index) unicodeCharacterData ccc ] on: NotFound do: [ 0 ].
+				ccc < otherCCC
+					ifTrue: [ index := index - 1 ]
+					ifFalse: [ stop := true ] ] ].
+	buffer add: codePoint afterIndex: index
 ]
 
 { #category : #streaming }

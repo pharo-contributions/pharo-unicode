@@ -173,7 +173,7 @@ UnicodeComposer >> hangulSTCombinationOf: sPart and: tPart [
 UnicodeComposer >> initializeForComposition [
 	combinations := IdentityDictionary new.
 	combiningCharacters := IdentitySet new.
-	NeoUnicodeCharacterData database valuesDo: [ :each |
+	UnicodeCharacterData database valuesDo: [ :each |
 		each isPrimaryComposite ifTrue: [ | combination |
 			combination := each decompositionMapping.
 			"combination first + combination second = each codePoint"

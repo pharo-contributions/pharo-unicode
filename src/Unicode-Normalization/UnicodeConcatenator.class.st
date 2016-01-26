@@ -134,7 +134,7 @@ UnicodeConcatenator >> isStableCharacterBlock [
 	quickCheckProperty := self quickCheckProperty.
 	^ [ :each | 
 		([ each unicodeCharacterData isStarter ] on: NotFound do: [ true ]) 
-			and: [ (NeoUnicodeCharacterData normalizationQuickCheck: quickCheckProperty forCodePoint: each codePoint) = #Y ] ]
+			and: [ (UnicodeCharacterData normalizationQuickCheck: quickCheckProperty forCodePoint: each codePoint) = #Y ] ]
 ]
 
 { #category : #private }
@@ -143,7 +143,7 @@ UnicodeConcatenator >> isStableCodePointBlock [
 	quickCheckProperty := self quickCheckProperty.
 	^ [ :each | 
 		([ each unicodeCharacterData isStarter ] on: NotFound do: [ true ]) 
-			and: [ (NeoUnicodeCharacterData normalizationQuickCheck: quickCheckProperty forCodePoint: each) = #Y ] ]
+			and: [ (UnicodeCharacterData normalizationQuickCheck: quickCheckProperty forCodePoint: each) = #Y ] ]
 ]
 
 { #category : #private }
