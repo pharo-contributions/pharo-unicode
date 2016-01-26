@@ -377,8 +377,8 @@ UnicodeCharacterData class >> parseUnicodeCharacterData: line [
 	"Test if the fields for decomposition, numerical and case mapping are all empty"
 	isCompact := #(6 7 8 9 13 14 15) allSatisfy: [ :each | (fields at: each) isEmpty ].
 	concreteClass := isCompact 
-		ifTrue: [ NeoUnicodeCharacterData ] 
-		ifFalse: [ NeoUnicodeCharacterDataExtended ].
+		ifTrue: [ UnicodeCharacterData ] 
+		ifFalse: [ UnicodeCharacterDataExtended ].
 	^ concreteClass new
 		initializeFrom: fields;
 		yourself
