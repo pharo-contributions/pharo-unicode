@@ -1,7 +1,7 @@
 "
 I am UnicodeCharacterData, I represent one record in the Unicode Character Database and describe properties of one character.
 
-I am uniquely identified by my code point (#codePoint).
+I am uniquely identified by my code point (#codePoint), my Unicode scalar value.
 
 I have an official name (#name). Sometimes I also know my older name (#oldName).
 
