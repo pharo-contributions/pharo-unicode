@@ -4,5 +4,5 @@ Extension { #name : #SmallInteger }
 SmallInteger >> unicodeCharacterData [
 	"Answer the official record from the Unicode Character Database for me"
 	
-	^ NeoUnicodeCharacterData forCodePoint: self 
+	^ UnicodeCharacterData forCodePoint: self 
 ]

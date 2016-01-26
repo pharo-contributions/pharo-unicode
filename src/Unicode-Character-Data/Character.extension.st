@@ -31,5 +31,5 @@ Character >> gtInspectorUnicodeCharacterDataIn: composite [
 Character >> unicodeCharacterData [
 	"Answer the official record from the Unicode Character Database for me"
 	
-	^ NeoUnicodeCharacterData forCodePoint: self codePoint 
+	^ UnicodeCharacterData forCodePoint: self codePoint 
 ]

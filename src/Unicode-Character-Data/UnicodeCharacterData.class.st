@@ -525,10 +525,10 @@ UnicodeCharacterData >> decompositionAsUCDs [
 			decomposition collect: [ :each | 
 				each isInteger 
 					ifTrue: [ 
-						NeoUnicodeCharacterData 
+						self class 
 							forCodePoint: each 
 							ifAbsent: [ 
-								NeoUnicodeCharacterData new 
+								self class new 
 									initializeDegenerate: each;
 									yourself ] ]
 					ifFalse: [ each ] ] ]
@@ -604,13 +604,13 @@ UnicodeCharacterData >> gtInspectorCharacterIn: composite [
 				{ 'mirrored'. self mirrored }.
 				{ 'uppercase'. 
 					self uppercase ifNotNil: [ :n | Character codePoint: n ] ifNil: [ '' ]. 
-					NeoUnicodeCharacterData forCodePoint: self uppercase ifAbsent: [] }.
+					self class forCodePoint: self uppercase ifAbsent: [] }.
 				{ 'lowercase'. 
 					self lowercase ifNotNil: [ :n | Character codePoint: n ] ifNil: [ '' ]. 
-					NeoUnicodeCharacterData forCodePoint: self lowercase ifAbsent: [] }.
+					self class forCodePoint: self lowercase ifAbsent: [] }.
 				{ 'titlecase'. 
 					self titlecase ifNotNil: [ :n | Character codePoint: n ] ifNil: [ '' ]. 
-					NeoUnicodeCharacterData forCodePoint: self titlecase ifAbsent: [] }.
+					self class forCodePoint: self titlecase ifAbsent: [] }.
 				{ 'decimal digit value'. self decimalDigitValue ifNil: [ '' ]. self decimalDigitValue }.
 				{ 'digit value'. self digitValue ifNil: [ '' ]. self digitValue }.
 				{ 'numeric value'. self numericValue ifNil: [ '' ]. self numericValue }.
