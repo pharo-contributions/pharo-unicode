@@ -179,7 +179,7 @@ UnicodeCharacterData class >> hangulDataForCodePoint: integer ifAbsent: aBlock [
 	^ self hangulDatabase 
 		at: integer 
 		ifAbsentPut: [ 
-			NeoUnicodeCharacterDataExtended new 
+			UnicodeCharacterDataExtended new 
 				initializeFromHangulSyllable: integer;
 				yourself ]
 ]
