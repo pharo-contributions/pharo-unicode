@@ -17,7 +17,7 @@ UnicodeCaser >> case: case from: inputStream to: outputStream [
 	self assert: (#(uppercase lowercase titelcase) includes: case).
 	inputStream do: [ :each |
 		| unicodeCharacterData |
-		unicodeCharacterData := NeoUnicodeCharacterData forCodePoint: each.
+		unicodeCharacterData := each unicodeCharacterData.
 		(unicodeCharacterData perform: case)
 			ifNil: [ outputStream nextPut: each ] 
 			ifNotNil: [ :value | outputStream nextPut: value ] ]
