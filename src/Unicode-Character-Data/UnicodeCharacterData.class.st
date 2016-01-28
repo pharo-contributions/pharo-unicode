@@ -307,6 +307,32 @@ UnicodeCharacterData class >> minimalDecomposition [
 ]
 
 { #category : #queries }
+UnicodeCharacterData class >> nameMatching: fragment [
+	"Find and return the Unicode Character Data objects whose official name matches fragment."
+	
+	"self nameMatching: 'CAPITAL LETTER A'"
+	
+	| matches |
+	matches := Array streamContents: [ :out |
+		self database valuesDo: [ :each |
+			"Note that by using #names both #name and #oldName if any will be used"
+			(each names findString: fragment startingAt: 1 caseSensitive: false) ~= 0
+				ifTrue: [ out nextPut: each ] ] ].
+	^ matches
+]
+
+{ #category : #queries }
+UnicodeCharacterData class >> named: fullName [
+	"Find and return the Unicode Character Data object whose official name is fullName."
+	
+	"self named: 'LATIN CAPITAL LETTER A'"
+	
+	self database valuesDo: [ :each |
+		each name = fullName ifTrue: [ ^ each ] ].
+	NotFound signalFor: fullName in: self 
+]
+
+{ #category : #queries }
 UnicodeCharacterData class >> nonStarterDecompositions [
 	"D111"
 	
@@ -567,6 +593,15 @@ UnicodeCharacterData >> decompositionMappingDo: block [
 ]
 
 { #category : #accessing }
+UnicodeCharacterData >> decompositionString [
+	"Return my decomposition as a String, if I have none, return an empty string."
+	
+	^ String streamContents: [ :out |
+			self decompositionMappingDo: [ :each | 
+				out nextPut: (Character codePoint: each) ] ]
+]
+
+{ #category : #accessing }
 UnicodeCharacterData >> digitValue [
 	"Return the digit value of my codepoint as an integer. Could be nil if not applicable."
 
@@ -816,6 +851,13 @@ UnicodeCharacterData >> name [
 ]
 
 { #category : #accessing }
+UnicodeCharacterData >> names [
+	"Return our internal name(s) representation <NAME><TAB>[<OLD-NAME>]"
+	
+	^ name
+]
+
+{ #category : #accessing }
 UnicodeCharacterData >> numericMapping [
 	"If not nil, a 3 element array: { decimalDigit. digit. numeric } each of which could be nil.
 	Use the accessors #decimalDigitValue, #digitValue or #numericValue instead"
@@ -845,6 +887,45 @@ UnicodeCharacterData >> printOn: stream [
 	self codePoint printOn: stream base: 16 nDigits: 4.
 	stream space; << self name.
 	self oldName ifNotNil: [ stream space; nextPut: $(; << self oldName; nextPut: $) ]
+]
+
+{ #category : #'gt-spotter-extension' }
+UnicodeCharacterData >> spotterPreviewIn: aComposite [
+	<spotterPreview: 10>
+	^ aComposite table
+		title: 'Unicode Character';
+		display: [
+			{
+				{ 'codepoint'. self codePoint }.
+				{ 'codepoint hex'. 
+					String streamContents: [ :stream | 
+						stream << 'U+'.
+						self codePoint printOn: stream base: 16 nDigits: 4 ].
+					self codePoint }.
+				{ 'character'. self character printString. self character }.
+				{ 'name'. self name }.
+				{ 'old name'. self oldName ifNil: [ '' ]. self oldName }.
+				{ 'general category'. self generalCategory }.
+				{ 'canonical combining class'. self canonicalCombiningClass }.
+				{ 'bidirectional category'. self bidirectionalCategory }.
+				{ 'mirrored'. self mirrored }.
+				{ 'uppercase'. 
+					self uppercase ifNotNil: [ :n | Character codePoint: n ] ifNil: [ '' ]. 
+					self class forCodePoint: self uppercase ifAbsent: [] }.
+				{ 'lowercase'. 
+					self lowercase ifNotNil: [ :n | Character codePoint: n ] ifNil: [ '' ]. 
+					self class forCodePoint: self lowercase ifAbsent: [] }.
+				{ 'titlecase'. 
+					self titlecase ifNotNil: [ :n | Character codePoint: n ] ifNil: [ '' ]. 
+					self class forCodePoint: self titlecase ifAbsent: [] }.
+				{ 'decimal digit value'. self decimalDigitValue ifNil: [ '' ]. self decimalDigitValue }.
+				{ 'digit value'. self digitValue ifNil: [ '' ]. self digitValue }.
+				{ 'numeric value'. self numericValue ifNil: [ '' ]. self numericValue }.
+				{ 'decomposition'. self decompositionDescription. self decompositionAsUCDs }
+			} ];
+		column: 'Key' evaluated: #first;
+		column: 'Value' evaluated: [ :entry | entry second asString ];
+		entity: self
 ]
 
 { #category : #accessing }
