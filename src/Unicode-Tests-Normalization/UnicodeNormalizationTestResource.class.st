@@ -54,20 +54,8 @@ UnicodeNormalizationTestResource >> data [
 ]
 
 { #category : #accessing }
-UnicodeNormalizationTestResource >> fileReference [
-	"Decompress http://www.unicode.org/Public/UNIDATA/UCD.zip next to your image"
-
-	^ FileLocator imageDirectory / #UCD / 'NormalizationTest.txt'
-]
-
-{ #category : #parsing }
-UnicodeNormalizationTestResource >> getRaw [
-	^ self fileReference exists
-		ifTrue: [ 
-			self fileReference binaryReadStreamDo: [ :bin |
-				(ZnCharacterReadStream on: bin) upToEnd ] ]
-		ifFalse: [ 
-			self url retrieveContents ]
+UnicodeNormalizationTestResource >> normalizationTestFile [
+	^ 'NormalizationTest.txt'
 ]
 
 { #category : #parsing }
@@ -75,13 +63,12 @@ UnicodeNormalizationTestResource >> parseLine: line [
 	| columns test comment |
 	columns := $; split: line.
 	test := SmallDictionary new.
-	#(#source #NFC #NFD #NFKC #NFKD)
-		doWithIndex: [ :key :number | 
-			| value |
-			value := columns at: number.
-			value := $  split: value.
-			value := value collect: [ :each | Integer readFrom: each base: 16 ] as: Array.
-			test at: key put: value ].
+	#(#source #NFC #NFD #NFKC #NFKD) doWithIndex: [ :key :number | 
+		| value |
+		value := columns at: number.
+		value := $  split: value.
+		value := value collect: [ :each | Integer readFrom: each base: 16 ] as: Array.
+		test at: key put: value ].
 	comment := line copyFrom: (line indexOf: $#) + 2 to: line size.
 	test at: #comment put: comment.
 	^ test
@@ -90,15 +77,10 @@ UnicodeNormalizationTestResource >> parseLine: line [
 { #category : #running }
 UnicodeNormalizationTestResource >> setUp [
 	data := Array streamContents: [ :out | 
-		self getRaw linesDo: [ :line | 
+		(UnicodeCharacterData getUnicodeCharacterDatabaseRaw: self normalizationTestFile) linesDo: [ :line | 
 			(line isEmpty or: [ line first = $# or: [ line first = $@ ] ])
 				ifFalse: [ 
 					| test |
 					test := self parseLine: line.
 					out nextPut: test ] ] ]
-]
-
-{ #category : #accessing }
-UnicodeNormalizationTestResource >> url [
-	^ 'http://www.unicode.org/Public/UNIDATA/NormalizationTest.txt' asZnUrl
 ]
