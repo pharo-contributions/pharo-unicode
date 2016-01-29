@@ -72,6 +72,17 @@ UnicodeCharacterData class >> bidirectionalCategories [
 	^ #(L R AL EN ES ET AN CS NSM BN B S WS ON LRE LRO RLE RLO PDF LRI RLI FSI PDI)
 ]
 
+{ #category : #initialization }
+UnicodeCharacterData class >> cleanUp: aggressive [
+	"self cleanUp"
+	"self cleanUp: true"
+
+	self resetHangulDatabase.
+	"Not 100% sure this is a good idea"
+	aggressive
+		ifTrue: [ self resetDataSets ]
+]
+
 { #category : #'accessing - datasets' }
 UnicodeCharacterData class >> compositionExclusions [
 	"D112"
@@ -421,6 +432,17 @@ UnicodeCharacterData class >> parseUnicodeJamoShortNames: aLine [
 	end := (aLine indexOf: Character space startingAt: start) -1.
 	shortName := aLine copyFrom: start to: end.
 	^codePoint -> shortName	 
+]
+
+{ #category : #initialization }
+UnicodeCharacterData class >> resetDataSets [
+	"self resetDataSets"
+
+	UnicodeCharacterDatabase := nil.
+	SpecialRanges := nil.
+	JamoShortNames := nil.
+	NormalizationQuickCheck := nil.
+	CompositionExclusions := nil
 ]
 
 { #category : #'private - hangul' }
