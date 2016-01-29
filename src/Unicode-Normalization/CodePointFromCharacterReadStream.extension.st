@@ -11,7 +11,7 @@ CodePointFromCharacterReadStream >> unicodeCompose [
 CodePointFromCharacterReadStream >> unicodeNFC [
 	"Return a UnicodeComposingReadStream over the receiver that streams over Integer code points composing them after decomposing them canonically"
 	
-	^ (UnicodeNFDReadStream on: self) unicodeCompose
+	^ self unicodeNFD unicodeCompose
 ]
 
 { #category : #'*unicode-normalization' }
@@ -25,7 +25,7 @@ CodePointFromCharacterReadStream >> unicodeNFD [
 CodePointFromCharacterReadStream >> unicodeNFKC [
 	"Return a UnicodeComposingReadStream over the receiver that streams over Integer code points composing them after decomposing them compatibly"
 	
-	^ (UnicodeNFKDReadStream on: self) unicodeCompose
+	^ self unicodeNFKD unicodeCompose
 ]
 
 { #category : #'*unicode-normalization' }
