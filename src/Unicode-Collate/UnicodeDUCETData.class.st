@@ -123,7 +123,7 @@ UnicodeDUCETData >> collateEntryFor: aCodePoint [
 UnicodeDUCETData >> hangulCollateSequenceFor: aCodePoint [
 	"Should create a collate sequence for hangul codepoints, see http://unicode.org/reports/tr10/#Hangul_Collation"
 
-	^ (NeoUnicodeCharacterData isHangulSyllableCodePoint: aCodePoint)
+	^ (UnicodeCharacterData isHangulSyllableCodePoint: aCodePoint)
 		ifTrue: [ self notYetImplemented ]
 ]
 

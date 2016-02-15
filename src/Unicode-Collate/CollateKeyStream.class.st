@@ -73,7 +73,7 @@ CollateKeyStream >> fillBuffer [
 	"Read the next collate element at the current level from nkdStream into buffer"
 
 	| entry candidates ccCheck isCC match |
-	ccCheck := [ :codePoint | (NeoUnicodeCharacterData forCodePoint: codePoint ifAbsent: nil) ifNotNil: [ :data | data ccc > 0 ] ifNil: [ false ] ].
+	ccCheck := [ :codePoint | (UnicodeCharacterData forCodePoint: codePoint ifAbsent: nil) ifNotNil: [ :data | data ccc > 0 ] ifNil: [ false ] ].
 	nfdStream next
 		ifNil: [ 
 			level < strategy weight levels
