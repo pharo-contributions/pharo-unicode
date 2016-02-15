@@ -3,6 +3,7 @@ The Pharo Unicode project.
 
 	ConfigurationOfUnicode load.
 	ConfigurationOfUnicode loadBleedingEdge.
+	ConfigurationOfUnicode project bleedgingEdge load: 'Collate'
 	
 Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
@@ -216,6 +217,50 @@ ConfigurationOfUnicode >> baseline3: spec [
 				'Unicode-Tests-Character-Data' 'Unicode-Tests-Casing' 'Unicode-Tests-Normalization') ]
 ]
 
+{ #category : #baselines }
+ConfigurationOfUnicode >> baseline4: spec [
+	<version: '4-baseline'>
+	
+	spec for: #common do: [
+		spec 
+			blessing: #baseline;
+			repository: 'http://smalltalkhub.com/mc/Pharo/Unicode/main/';
+
+			package: 'Unicode-Character-Data';
+			package: 'Unicode-Stream-Support';
+			package: 'Unicode-Casing' with: [ 
+				spec requires: #('Unicode-Character-Data' 'Unicode-Stream-Support') ];
+			package: 'Unicode-Normalization' with: [ 
+				spec requires: #('Unicode-Character-Data' 'Unicode-Stream-Support') ];
+			package: 'Unicode-Collate' with: [ 
+				spec requires: #('Unicode-Normalization') ];
+
+			package: 'Unicode-Tests-Character-Data' with: [ 
+				spec requires: 'Unicode-Character-Data' ];
+			package: 'Unicode-Tests-Casing' with: [ 
+				spec requires: 'Unicode-Casing' ];
+			package: 'Unicode-Tests-Normalization' with: [ 
+				spec requires: 'Unicode-Normalization' ];
+			package: 'Unicode-Tests-Collate' with: [ 
+				spec requires: 'Unicode-Collate' ];
+
+			group: 'default' with: #('Core' 'Tests');
+			
+			group: 'Core' with: #(
+				'Unicode-Character-Data' 'Unicode-Casing' 'Unicode-Stream-Support' 'Unicode-Normalization');
+			group: 'Tests' with: #(
+				'Unicode-Tests-Character-Data' 'Unicode-Tests-Casing' 'Unicode-Tests-Normalization');
+			group: 'Collate' with: #(
+				'Unicode-Collate' 'Unicode-Tests-Collate') ]
+]
+
+{ #category : #'symbolic versions' }
+ConfigurationOfUnicode >> development: spec [
+	<symbolicVersion: #'development'>
+	
+	spec for: #common version: '6'
+]
+
 { #category : #accessing }
 ConfigurationOfUnicode >> project [
 
@@ -317,4 +362,24 @@ ConfigurationOfUnicode >> version5: spec [
 			package: 'Unicode-Tests-Character-Data' with: 'Unicode-Tests-Character-Data-SvenVanCaekenberghe.1';
 			package: 'Unicode-Tests-Casing' with: 'Unicode-Tests-Casing-SvenVanCaekenberghe.1';
 			package: 'Unicode-Tests-Normalization' with: 'Unicode-Tests-Normalization-SvenVanCaekenberghe.2' ]
+]
+
+{ #category : #versions }
+ConfigurationOfUnicode >> version6: spec [
+	<version: '6' imports: #('4-baseline')>
+	
+	spec for: #common do: [
+		spec
+			blessing: #release;
+			
+			package: 'Unicode-Character-Data' with: 'Unicode-Character-Data-SvenVanCaekenberghe.7';
+			package: 'Unicode-Stream-Support' with: 'Unicode-Stream-Support-SvenVanCaekenberghe.1';
+			package: 'Unicode-Casing' with: 'Unicode-Casing-SvenVanCaekenberghe.2';
+			package: 'Unicode-Normalization' with: 'Unicode-Normalization-SvenVanCaekenberghe.4';
+			package: 'Unicode-Collate' with: 'Unicode-Collate-SvenVanCaekenberghe.2';
+
+			package: 'Unicode-Tests-Character-Data' with: 'Unicode-Tests-Character-Data-SvenVanCaekenberghe.1';
+			package: 'Unicode-Tests-Casing' with: 'Unicode-Tests-Casing-SvenVanCaekenberghe.1';
+			package: 'Unicode-Tests-Normalization' with: 'Unicode-Tests-Normalization-SvenVanCaekenberghe.2';
+			package: 'Unicode-Tests-Collate' with: 'Unicode-Tests-Collate-SvenVanCaekenberghe.1' ]
 ]
