@@ -96,6 +96,12 @@ UnicodeComposingReadStream >> peek [
 	^ buffer first
 ]
 
+{ #category : #streaming }
+UnicodeComposingReadStream >> reset [
+	input reset.
+	buffer removeAll
+]
+
 { #category : #private }
 UnicodeComposingReadStream >> scanFirstStarter [
 	| current |
