@@ -258,7 +258,7 @@ ConfigurationOfUnicode >> baseline4: spec [
 ConfigurationOfUnicode >> development: spec [
 	<symbolicVersion: #'development'>
 	
-	spec for: #common version: '6'
+	spec for: #common version: '7'
 ]
 
 { #category : #accessing }
@@ -376,6 +376,26 @@ ConfigurationOfUnicode >> version6: spec [
 			package: 'Unicode-Stream-Support' with: 'Unicode-Stream-Support-SvenVanCaekenberghe.1';
 			package: 'Unicode-Casing' with: 'Unicode-Casing-SvenVanCaekenberghe.2';
 			package: 'Unicode-Normalization' with: 'Unicode-Normalization-SvenVanCaekenberghe.4';
+			package: 'Unicode-Collate' with: 'Unicode-Collate-SvenVanCaekenberghe.2';
+
+			package: 'Unicode-Tests-Character-Data' with: 'Unicode-Tests-Character-Data-SvenVanCaekenberghe.1';
+			package: 'Unicode-Tests-Casing' with: 'Unicode-Tests-Casing-SvenVanCaekenberghe.1';
+			package: 'Unicode-Tests-Normalization' with: 'Unicode-Tests-Normalization-SvenVanCaekenberghe.2';
+			package: 'Unicode-Tests-Collate' with: 'Unicode-Tests-Collate-SvenVanCaekenberghe.1' ]
+]
+
+{ #category : #versions }
+ConfigurationOfUnicode >> version7: spec [
+	<version: '7' imports: #('4-baseline')>
+	
+	spec for: #common do: [
+		spec
+			blessing: #release;
+			
+			package: 'Unicode-Character-Data' with: 'Unicode-Character-Data-SvenVanCaekenberghe.7';
+			package: 'Unicode-Stream-Support' with: 'Unicode-Stream-Support-SvenVanCaekenberghe.1';
+			package: 'Unicode-Casing' with: 'Unicode-Casing-SvenVanCaekenberghe.2';
+			package: 'Unicode-Normalization' with: 'Unicode-Normalization-HenrikSperreJohansen.5';
 			package: 'Unicode-Collate' with: 'Unicode-Collate-SvenVanCaekenberghe.2';
 
 			package: 'Unicode-Tests-Character-Data' with: 'Unicode-Tests-Character-Data-SvenVanCaekenberghe.1';
