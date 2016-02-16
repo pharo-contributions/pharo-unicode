@@ -7,8 +7,6 @@ Each collate element is stored as a word value, on the format:
 [31,27 ][        26       ][ 25,16][ 15, 0  ].
 
 If the DUCET or CLDR in newer versions go outside this range, adjustments to the class initialization will be necessary, hopefully 32bits will still be enough to sort the (strictly speaking, smaller) Unicode range.
-
-Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
 	#name : #CollateSequence,
@@ -37,6 +35,11 @@ CollateSequence class >> initialize [
 	VariableWeightMask := 16r2000000
 ]
 
+{ #category : #private }
+CollateSequence >> , anotherSequence [
+	^self class fromElements: self elements, anotherSequence elements
+]
+
 { #category : #accessing }
 CollateSequence >> at: anIndex level: aLevel [
 	^(self at: anIndex) >> (LevelShifts at: aLevel) bitAnd: (LevelMasks at: aLevel) 
@@ -56,6 +59,19 @@ CollateSequence >> at: anIndex putLevel1: level1 level2: level2 level3: level3 v
 
 	self at: anIndex put: collateElement
 	
+]
+
+{ #category : #private }
+CollateSequence >> elements [
+	|elements|
+	elements := Array new: self size.
+	1 to: self size do: [ :i | 
+		elements at: i put: 
+			{self at: i level: 1.
+			self at: i level: 2.
+			self at: i level: 3.
+			self variablyWeighedAt: i }  ].
+	^elements
 ]
 
 { #category : #accessing }
@@ -94,6 +110,12 @@ CollateSequence >> initializeFrom: elementCollection [
 				level2: element second
 				level3: element third
 				variableWeight: element last ]
+]
+
+{ #category : #testing }
+CollateSequence >> isWellFormed [
+	"We only care about collateentries being well formed at the moment."
+	^true
 ]
 
 { #category : #private }

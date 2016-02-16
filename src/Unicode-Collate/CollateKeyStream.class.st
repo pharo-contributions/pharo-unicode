@@ -6,7 +6,6 @@ This sequence contains values on up to four levels; a collate key contains all t
 
 See http://unicode.org/reports/tr10/#Step_3 for details.
 
-Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
 	#name : #CollateKeyStream,
@@ -71,44 +70,44 @@ CollateKeyStream >> collateTo: anotherKeyStream [
 
 { #category : #private }
 CollateKeyStream >> fillBuffer [
-	"Read the next collate element at the current level from nkdStream into buffer"
+	"Read the next collate element into buffer"
 
-	| entry candidates ccCheck isCC match |
+	| entry ccs ccCheck   |
 	ccCheck := [ :codePoint | (UnicodeCharacterData forCodePoint: codePoint ifAbsent: nil) ifNotNil: [ :data | data ccc > 0 ] ifNil: [ false ] ].
 	nfdStream next
-		ifNil: [ 
+		ifNil: [ "Go to next level, or fill buffer with nils to return indicating end of stream"
 			level < strategy weight levels
 				ifTrue: [buffer add: 0.
 					level := level + 1.
 					nfdStream reset.
-					"Quick hack; start off using the empty element when we've switched levels"
 					entry := strategy collateEntryFor: nil ]
 				ifFalse: [^buffer add: nil; add: nil ] ]
-		ifNotNil: [ :codePoint | entry := strategy collateEntryFor: codePoint ].	"Reached end of level"
+		ifNotNil: [ :codePoint | entry := strategy collateEntryFor: codePoint ].
 	"Resolve combined entries. A combination is either a sequence of starters, or a sequence of starters ending in combining marks. Combining marks are special; the first one that has a combination will be used. See http://unicode.org/reports/tr10/#S2.1 "
-	
-	[	candidates := OrderedCollection with: nfdStream peek.
-		isCC := ccCheck value: candidates last.
-		[ isCC ] whileTrue:
-			[ | candidate |
-			candidate := nfdStream
-				next;
-				peek.
-			isCC := ccCheck value: candidate.
-			isCC
-				ifTrue: [ candidates add: candidate ] ].
-		match := candidates detect: [ :one | ((entry followedBy: one) ifNotNil: [ :e | entry := e ]) notNil] ifNone: nil.
-		match ifNotNil: [ candidates remove: match ].
-		match notNil ] whileTrue.
-	"Remove non-combining starter from candidates that need to "
-	(ccCheck value: candidates last) ifFalse: [ candidates removeLast ].
+	ccs := OrderedCollection new.
+	[|	match candidate isCC|
+		candidate := nfdStream peek.
+		isCC := ccCheck value: candidate.
+		isCC 
+			ifFalse: [
+				 (match := entry followedBy: candidate) 
+					ifNotNil: [ :e | nfdStream next.
+						entry := e ]]
+			ifTrue: [[ isCC ] whileTrue: 
+				[	(match := entry followedBy: candidate) 
+						ifNotNil: [ :e | entry := e ]
+						ifNil: [ ccs add: candidate ]. 	
+					candidate := nfdStream next; peek.
+					isCC := ccCheck value: candidate]].
+		 match notNil and: [ccs isEmpty]]  whileTrue.
+
 	"addLevel:in:precededBy:to: returns the number of values added to buffer.
 	(Collate entries with value 0 are not part of key). If no values are actually added, call fillBuffer again."
 	"TODO: Check that no weigings does alterations on the boundaries we fill buffer, so nil can be used safely for first element "
-	(candidates
+	(ccs
 		inject: (strategy weight addLevel: level in: entry precededBy: nil to: buffer)
 		into: [ :sub :next | sub + (strategy weight addLevel: level in: (entry :=  strategy collateEntryFor: next) precededBy: entry to: buffer) ]) = 0
-		ifTrue: [ self fillBuffer ]
+		ifTrue: [ self fillBuffer ] 
 ]
 
 { #category : #'initialize-release' }

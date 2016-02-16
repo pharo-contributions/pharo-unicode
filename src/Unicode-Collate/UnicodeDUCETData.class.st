@@ -6,7 +6,7 @@ The table holds both CollateSequences, and CollateEntries, when loopups are full
 
 Users should normally not consult the DUCET table data directly, but rather use a CollateStrategy, where one  can  both specify collate properties not contained in the collate element data, as well as potentially using different datatables  tailored for specific locales. 
 
-Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
+
 "
 Class {
 	#name : #UnicodeDUCETData,
@@ -47,6 +47,59 @@ UnicodeDUCETData class >> addCEFrom: allKeysStream to: collateTable [
 	^ element
 ]
 
+{ #category : #'private - import' }
+UnicodeDUCETData class >> addTibetanContractionsTo: collateTable [ 
+	"http://unicode.org/reports/tr35/tr35-collation.html#tibetan_contractions"
+	"This is needed so for instance 
+	0FBC 0062
+	0FB2 0F71 0001 0F80 0061
+	0FB2 0001 0F80 0061
+	sorts properly when our use of the CollateEntry datastructure relies on there being no holes 
+	(and it does, we have no way of reverting a composed entry back to its constituent parts)"
+	|data codePointSequences collateSequences |
+		
+	[ |FB2 FB3 F71 F71F72 F71F74|
+	FB2 := (collateTable followedBy: 16r0FB2) value.
+	FB3 := (collateTable followedBy: 16r0FB3) value.
+	F71 := (collateTable followedBy: 16r0F71) value.
+	F71F72 := ((collateTable followedBy: 16r0F71) followedBy: 16r0F72) value.
+	F71F74 := ((collateTable followedBy: 16r0F71) followedBy: 16r0F74) value.
+	data := {
+		"These are actually missing"
+		#(16rFB2 16r0F71) -> (FB2, F71).
+		#(16rFB3 16r0F71) -> (FB3, F71).
+		"These are needed to preserve sort order, after missing sequences are added"
+		#(16rFB2 16r0F71 16r0F72)	-> 	(FB2, F71F72).
+		#(16rFB2 16r0F73) 				-> (FB2, F71F72).
+		#(16rFB2 16r0F71 16r0F74)	-> (FB2, F71F74).
+		#(16rFB2 16r0F75)				-> (FB2, F71F74).
+		
+		#(16rFB3 16r0F71 16r0F72)	-> 	(FB2, F71F72).
+		#(16rFB3 16r0F73) 				-> (FB2, F71F72).
+		#(16rFB3 16r0F71 16r0F74)	-> (FB3, F71F74).
+		#(16rFB3 16r0F75)				-> (FB3, F71F74).}] value. 
+	codePointSequences := data collect: #key.
+	collateSequences := data collect: #value.
+	codePointSequences doWithIndex: [ :codePoints :seqIx| | element |
+	element := collateTable.
+	"Find the correct entry to add new sequence to."
+	codePoints
+		do:
+			[ :codePoint | 
+			element := element
+				followedBy: codePoint
+				ifAbsentPut: [ CollateEntry new ] ].
+			element value ifNil: [ element setSequence: (collateSequences at: seqIx)]].
+	
+]
+
+{ #category : #'private - import' }
+UnicodeDUCETData class >> checkWellFormedness: aTable [
+	"We need a well-formed table where no sequence is nil, or we may get stuck in a rut"
+	aTable isWellFormed ifFalse: [ self addTibetanContractionsTo: aTable ].
+	^aTable isWellFormed
+]
+
 { #category : #accessing }
 UnicodeDUCETData class >> default [
 	^DUCET ifNil: [self importDUCET ]
@@ -59,8 +112,9 @@ UnicodeDUCETData class >> forLocale: aLocale [
 ]
 
 { #category : #'private - import' }
-UnicodeDUCETData class >> importDUCET [
-	"http://unicode.org/reports/tr10/#File_Format
+UnicodeDUCETData class >> import: anAllKeysStream [
+	"Import a table from the stream, 
+	where source is on the format specified in 	http://unicode.org/reports/tr10/#File_Format
 	<collationElementTable> := <version> 
                            <variable>?
                            <backwards>*
@@ -78,10 +132,25 @@ UnicodeDUCETData class >> importDUCET [
 	[ '#@' includes: allKeysStream peek ]
 		whileTrue: [ allKeysStream upTo: Character lf ].
 	allKeysStream next.
-	collateTable := CollateEntry new.
+	collateTable := CollateEntry new setSequence: EmptyElement.
 	[ allKeysStream atEnd ]
 		whileFalse: [ self addCEFrom: allKeysStream to: collateTable ].
-	collateTable minimize.
+	(self checkWellFormedness: collateTable) 
+		ifFalse: [^self error: 'CollateTable is no longer well formed after our adjustments, fix, or fall back to using an older Unicode version'].
+	^collateTable minimize.
+]
+
+{ #category : #'private - import' }
+UnicodeDUCETData class >> importDUCET [
+	"Import the DUCET data for latest Unicode version"
+
+	| collateTable |
+	collateTable := self
+		import:
+			(ZnClient new
+				streaming: true;
+				get: 'http://www.unicode.org/Public/UCA/latest/allkeys.txt')
+				ascii.
 	^ DUCET := self new initializeFrom: collateTable
 ]
 

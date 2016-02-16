@@ -1,9 +1,11 @@
 "
 A CollateEntry holds both the sequence for a codepoint, and a map of the valid combinations with other characters that form different collate sequences/entries.
 
+We have no way of decomposing an entry into the sequences for its constituent parts, so we rely on the table containing no entries with a nil sequence.
+
 Users are responsible for resolving CollateEntries that are not to be further combined into CollateSequences, by calling #value.
 
-Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
+
 "
 Class {
 	#name : #CollateEntry,
@@ -29,6 +31,15 @@ CollateEntry >> followedBy: aCodePoint ifAbsent: aBlock [
 CollateEntry >> followedBy: aCodePoint ifAbsentPut: anEntry [ 
 	"Use IdentityDictionary over normal Dictionary due to better hash distribution of identityHash"
 	^(combinations ifNil: [combinations := IdentityDictionary new]) at: aCodePoint ifAbsentPut: anEntry
+]
+
+{ #category : #testing }
+CollateEntry >> isWellFormed [
+	"Check wellformedness of entry.
+	If sequence is nil, it means there is a hole, and 
+	http://www.unicode.org/reports/tr10/#WF5
+	is not satisfied"
+ ^sequence notNil and: [sequence isWellFormed and: [ combinations isNil or: [combinations allSatisfy: #isWellFormed ]]] 
 ]
 
 { #category : #private }
