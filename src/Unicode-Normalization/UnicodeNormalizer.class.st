@@ -22,7 +22,7 @@ Class {
 UnicodeNormalizer >> composeString: string [
 	"Return the NFC of string, the canonical composition normal form"
 	
-	(self isNFC: string) ifTrue: [ ^ string ]. 
+	(self isAlreadyNFC: string) ifTrue: [ ^ string ]. 
 	^ string readStream unicodeCodePoints unicodeNFC unicodeCharacters upToEnd
 ]
 
@@ -30,7 +30,7 @@ UnicodeNormalizer >> composeString: string [
 UnicodeNormalizer >> composeStringCompatible: string [
 	"Return the NFKC of string, the compatible composition normal form"
 	
-	(self isNFKC: string) ifTrue: [ ^ string ]. 
+	(self isAlreadyNFKC: string) ifTrue: [ ^ string ]. 
 	^ string readStream unicodeCodePoints unicodeNFKC unicodeCharacters upToEnd
 ]
 
@@ -38,7 +38,7 @@ UnicodeNormalizer >> composeStringCompatible: string [
 UnicodeNormalizer >> decomposeString: string [
 	"Return the NFD of string, the canonical decomposition normal form"
 	
-	(self isNFD: string) ifTrue: [ ^ string ]. 
+	(self isAlreadyNFD: string) ifTrue: [ ^ string ]. 
 	^ string readStream unicodeCodePoints unicodeNFD unicodeCharacters upToEnd
 ]
 
@@ -46,13 +46,16 @@ UnicodeNormalizer >> decomposeString: string [
 UnicodeNormalizer >> decomposeStringCompatible: string [
 	"Return the NFKD of string, the compatible decomposition normal form"
 	
-	(self isNFKD: string) ifTrue: [ ^ string ]. 
+	(self isAlreadyNFKD: string) ifTrue: [ ^ string ]. 
 	^ string readStream unicodeCodePoints unicodeNFKD unicodeCharacters upToEnd
 ]
 
 { #category : #testing }
-UnicodeNormalizer >> isNFC: string [
-	"Return true when string is in NFC form, false otherwise"
+UnicodeNormalizer >> isAlreadyNFC: string [
+	"Return true when we know string is already in NFC form, false otherwise.
+	This uses a quick check algorithm.
+	False means we don't know, but it is still possible. 
+	The only way to know for sure is to do the actual conversion."
 	
 	"Latin1 strings are always in NFC"
 	^ string isByteString or: [ 
@@ -60,8 +63,11 @@ UnicodeNormalizer >> isNFC: string [
 ]
 
 { #category : #testing }
-UnicodeNormalizer >> isNFD: string [
-	"Return true when string is in NFD form, false otherwise"
+UnicodeNormalizer >> isAlreadyNFD: string [
+	"Return true when we know string is already in NFD form, false otherwise.
+	This uses a quick check algorithm.
+	False means we don't know, but it is still possible. 
+	The only way to know for sure is to do the actual conversion."
 
 	"ASCII strings are always in NFD"
 	^ (string isByteString and: [ string isAsciiString ])
@@ -69,8 +75,11 @@ UnicodeNormalizer >> isNFD: string [
 ]
 
 { #category : #testing }
-UnicodeNormalizer >> isNFKC: string [
-	"Return true when string is in NFKC form, false otherwise"
+UnicodeNormalizer >> isAlreadyNFKC: string [
+	"Return true when we know string is already in NFKC form, false otherwise.
+	This uses a quick check algorithm.
+	False means we don't know, but it is still possible. 
+	The only way to know for sure is to do the actual conversion."
 
 	"ASCII strings are always in NFKC"
 	^ (string isByteString and: [ string isAsciiString ])
@@ -78,12 +87,43 @@ UnicodeNormalizer >> isNFKC: string [
 ]
 
 { #category : #testing }
-UnicodeNormalizer >> isNFKD: string [
-	"Return true when string is in NFKD form, false otherwise"
+UnicodeNormalizer >> isAlreadyNFKD: string [
+	"Return true when we know string is already in NFKD form, false otherwise.
+	This uses a quick check algorithm.
+	False means we don't know, but it is still possible. 
+	The only way to know for sure is to do the actual conversion."
 
 	"ASCII strings are always in NFKD"
 	^ (string isByteString and: [ string isAsciiString ])
 		or: [ (UnicodeCharacterData normalizationQuickCheck: #NFKD_QC forString: string) = #Y ]
+]
+
+{ #category : #testing }
+UnicodeNormalizer >> isNFC: string [
+	"Return true when string is in NFC form, false otherwise"
+	
+	^ string = (self toNFC: string)
+]
+
+{ #category : #testing }
+UnicodeNormalizer >> isNFD: string [
+	"Return true when string is in NFD form, false otherwise"
+	
+	^ string = (self toNFD: string)
+]
+
+{ #category : #testing }
+UnicodeNormalizer >> isNFKC: string [
+	"Return true when string is in NFC form, false otherwise"
+	
+	^ string = (self toNFKC: string)
+]
+
+{ #category : #testing }
+UnicodeNormalizer >> isNFKD: string [
+	"Return true when string is in NFKD form, false otherwise"
+	
+	^ string = (self toNFKD: string)
 ]
 
 { #category : #public }
