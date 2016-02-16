@@ -8,6 +8,8 @@ L1 ≠ 0, Variable						old L1	space [.0000.0000.0000.0209]
 L1=0, L3 ≠ 0, following a Variable		0000	combining grave [.0000.0000.0000.0000]
 L1 = 0, L3 ≠ 0, not following a Variable	FFFF	combining grave [.0000.0035.0002.FFFF]
 L1 ≠ 0, not Variable					FFFF	Capital A [.06D9.0020.0008.FFFF]
+						
+Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
 	#name : #ShiftedWeighing,

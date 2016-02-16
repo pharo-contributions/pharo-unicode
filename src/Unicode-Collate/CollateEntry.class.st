@@ -3,7 +3,7 @@ A CollateEntry holds both the sequence for a codepoint, and a map of the valid c
 
 Users are responsible for resolving CollateEntries that are not to be further combined into CollateSequences, by calling #value.
 
-
+Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
 	#name : #CollateEntry,

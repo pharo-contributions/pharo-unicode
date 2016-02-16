@@ -6,6 +6,7 @@ This sequence contains values on up to four levels; a collate key contains all t
 
 See http://unicode.org/reports/tr10/#Step_3 for details.
 
+Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
 	#name : #CollateKeyStream,
