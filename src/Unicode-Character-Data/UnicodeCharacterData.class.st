@@ -386,6 +386,18 @@ UnicodeCharacterData class >> normalizationQuickCheck: property forString: strin
 		forCodePointStream: string readStream unicodeCodePoints
 ]
 
+{ #category : #'private - database' }
+UnicodeCharacterData class >> optimizeDatabase [
+	"Improve the distribution at a reasonable cost (optional)"
+	
+	"UnicodeCharacterData database keys in: [ :known |
+		[ known do: [ :each | each unicodeCharacterData ] ] bench ]"
+	
+	"[ 1 to: 16r10FFFF do: [ :each | UnicodeCharacterData forCodePoint: each ifAbsent: [ ] ] ] bench"
+	
+	self database growTo: 53233
+]
+
 { #category : #'private - derived normalization properties' }
 UnicodeCharacterData class >> parseDerivedNormalizationProperty: line [
 	| fields range value comment |
