@@ -2,8 +2,8 @@
 The Pharo Unicode project.
 
 	ConfigurationOfUnicode load.
-	ConfigurationOfUnicode loadBleedingEdge.
-	ConfigurationOfUnicode project bleedgingEdge load: 'Collate'
+	ConfigurationOfUnicode loadDevelopment.
+	ConfigurationOfUnicode project development load: 'Collate'
 	
 Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
