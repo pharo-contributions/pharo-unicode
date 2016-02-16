@@ -96,6 +96,12 @@ UnicodeDecomposingReadStream >> peek [
 	^ buffer first
 ]
 
+{ #category : #streaming }
+UnicodeDecomposingReadStream >> reset [
+	input reset.
+	buffer removeAll
+]
+
 { #category : #converting }
 UnicodeDecomposingReadStream >> unicodeCharacters [
 	"Return a CharacterFromCodePointReadStream over the receiver that streams over Characters"
