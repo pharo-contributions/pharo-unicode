@@ -102,25 +102,19 @@ CollateKeyStream >> fillBuffer [
 			ifTrue: [[ currentCCC > 0 ] whileTrue: 
 				[	(match := entry followedBy: candidate) 
 						ifNotNil: [ :e | entry := e ]
-						ifNil: [ nonStarters add: candidate ]. 	
+						ifNil: [ |cccBaseIx|
+							cccBaseIx := 1.
+							[ cccBaseIx <= nonStarters size and: [ candidate notNil] ] whileTrue: [ 
+								((nonStarters at: cccBaseIx) followedBy: candidate) 
+									ifNotNil: [:cccContraction |
+										nonStarters at: cccBaseIx put: cccContraction.
+										candidate := nil].
+								cccBaseIx := cccBaseIx + 1].
+							candidate ifNotNil: [nonStarters add: (strategy collateEntryFor:candidate)] ]. 	
 					candidate := nfdStream next; peek.
 					currentCCC := ccValue value: candidate value: currentCCC]].
 		 match notNil and: [nonStarters isEmpty]]  whileTrue.
-	["We need to find contracted collateElements for any superfluous nonStarters, as per S2.1.3 and S2.5"
-	|baseIx |
-	"A bit convoluted, but this way, we get the ccc sequences without any allocation"
-	baseIx := 1.
-	[baseIx <= nonStarters size ] whileTrue: [ |cccEntry candidateIx|
-		 cccEntry := strategy collateEntryFor: (nonStarters at: baseIx).
-		candidateIx := baseIx + 1.
-		[candidateIx <= nonStarters size ] whileTrue: [
-		(cccEntry followedBy: (nonStarters at: candidateIx)) 
-			ifNotNil: [ :combinedEntry | 
-				cccEntry := combinedEntry.
-				nonStarters removeAt: candidateIx. ] 
-			ifNil: [ candidateIx := candidateIx + 1 ] ].
-		nonStarters at: baseIx put: cccEntry.
-		baseIx := baseIx + 1.]] value.
+	
 	"addLevel:in:precededBy:to: returns the number of values added to buffer.
 	(Collate entries with value 0 are not part of key). If no values are actually added, call fillBuffer again."
 	"TODO: Check that no weigings does alterations on the boundaries we fill buffer, so nil can be used safely for first element "
