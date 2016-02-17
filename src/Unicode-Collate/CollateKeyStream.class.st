@@ -72,7 +72,7 @@ CollateKeyStream >> collateTo: anotherKeyStream [
 CollateKeyStream >> fillBuffer [
 	"Read the next collate element into buffer"
 
-	| entry ccs ccValue  |
+	| entry nonStarters ccValue  |
 	ccValue := [ :codePoint :previousCCC| 
 		"http://unicode.org/reports/tr10/#S2.1.2
 		Return codePoint ccc if it is unblocked by current ccValue, 0 if blocked"
@@ -89,7 +89,7 @@ CollateKeyStream >> fillBuffer [
 		ifNotNil: [ :codePoint | entry := strategy collateEntryFor: codePoint ].
 	"Resolve combined entries. A combination is either a sequence of starters, or a sequence of starters ending in combining marks. Combining marks are special; the first one that has a combination will be used. See http://unicode.org/reports/tr10/#S2.1 "
 	
-	ccs := OrderedCollection new.
+	nonStarters := OrderedCollection new.
 	[|	match candidate currentCCC |
 		currentCCC := 0.
 		candidate := nfdStream peek.
@@ -102,17 +102,31 @@ CollateKeyStream >> fillBuffer [
 			ifTrue: [[ currentCCC > 0 ] whileTrue: 
 				[	(match := entry followedBy: candidate) 
 						ifNotNil: [ :e | entry := e ]
-						ifNil: [ ccs add: candidate ]. 	
+						ifNil: [ nonStarters add: candidate ]. 	
 					candidate := nfdStream next; peek.
 					currentCCC := ccValue value: candidate value: currentCCC]].
-		 match notNil and: [ccs isEmpty]]  whileTrue.
-
+		 match notNil and: [nonStarters isEmpty]]  whileTrue.
+	["We need to find contracted collateElements for any superfluous nonStarters, as per S2.1.3 and S2.5"
+	|baseIx |
+	"A bit convoluted, but this way, we get the ccc sequences without any allocation"
+	baseIx := 1.
+	[baseIx <= nonStarters size ] whileTrue: [ |cccEntry candidateIx|
+		 cccEntry := strategy collateEntryFor: (nonStarters at: baseIx).
+		candidateIx := baseIx + 1.
+		[candidateIx <= nonStarters size ] whileTrue: [
+		(cccEntry followedBy: (nonStarters at: candidateIx)) 
+			ifNotNil: [ :combinedEntry | 
+				cccEntry := combinedEntry.
+				nonStarters removeAt: candidateIx. ] 
+			ifNil: [ candidateIx := candidateIx + 1 ] ].
+		nonStarters at: baseIx put: cccEntry.
+		baseIx := baseIx + 1.]] value.
 	"addLevel:in:precededBy:to: returns the number of values added to buffer.
 	(Collate entries with value 0 are not part of key). If no values are actually added, call fillBuffer again."
 	"TODO: Check that no weigings does alterations on the boundaries we fill buffer, so nil can be used safely for first element "
-	(ccs
+	(nonStarters
 		inject: (strategy weight addLevel: level in: entry precededBy: nil to: buffer)
-		into: [ :sub :next | sub + (strategy weight addLevel: level in: (entry :=  strategy collateEntryFor: next) precededBy: entry to: buffer) ]) = 0
+		into: [ :sub :next | sub + (strategy weight addLevel: level in: (entry := next) precededBy: entry to: buffer) ]) = 0
 		ifTrue: [ self fillBuffer ] 
 ]
 

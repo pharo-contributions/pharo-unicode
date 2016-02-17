@@ -19,7 +19,7 @@ Class {
 
 { #category : #accessing }
 CollateEntry >> followedBy: aCodePoint [
-	^combinations at: aCodePoint ifAbsent: [ nil ]
+	^combinations at: aCodePoint ifAbsent:  nil 
 ]
 
 { #category : #accessing }
