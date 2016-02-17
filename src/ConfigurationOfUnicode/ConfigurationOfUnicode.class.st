@@ -4,6 +4,13 @@ The Pharo Unicode project.
 	ConfigurationOfUnicode load.
 	ConfigurationOfUnicode loadDevelopment.
 	ConfigurationOfUnicode project development load: 'Collate'
+
+More info can be found in the following article
+
+	An Implementation of Unicode Normalization
+	Streaming NFC, NFD, NFKC & NFKD, normalization QC and normalization preserving concatenation.
+	Sven Van Caekenberghe, Henrik Sperre Johansen
+	https://medium.com/concerning-pharo/an-implementation-of-unicode-normalization-7c6719068f43#.qmy18gky0
 	
 Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
@@ -258,7 +265,7 @@ ConfigurationOfUnicode >> baseline4: spec [
 ConfigurationOfUnicode >> development: spec [
 	<symbolicVersion: #'development'>
 	
-	spec for: #common version: '7'
+	spec for: #common version: '8'
 ]
 
 { #category : #accessing }
@@ -278,7 +285,7 @@ ConfigurationOfUnicode >> project [
 ConfigurationOfUnicode >> stable: spec [
 	<symbolicVersion: #'stable'>
 	
-	spec for: #common version: '5'
+	spec for: #common version: '8'
 ]
 
 { #category : #versions }
@@ -397,6 +404,26 @@ ConfigurationOfUnicode >> version7: spec [
 			package: 'Unicode-Casing' with: 'Unicode-Casing-SvenVanCaekenberghe.2';
 			package: 'Unicode-Normalization' with: 'Unicode-Normalization-HenrikSperreJohansen.5';
 			package: 'Unicode-Collate' with: 'Unicode-Collate-SvenVanCaekenberghe.2';
+
+			package: 'Unicode-Tests-Character-Data' with: 'Unicode-Tests-Character-Data-SvenVanCaekenberghe.1';
+			package: 'Unicode-Tests-Casing' with: 'Unicode-Tests-Casing-SvenVanCaekenberghe.1';
+			package: 'Unicode-Tests-Normalization' with: 'Unicode-Tests-Normalization-SvenVanCaekenberghe.2';
+			package: 'Unicode-Tests-Collate' with: 'Unicode-Tests-Collate-SvenVanCaekenberghe.1' ]
+]
+
+{ #category : #versions }
+ConfigurationOfUnicode >> version8: spec [
+	<version: '8' imports: #('4-baseline')>
+	
+	spec for: #common do: [
+		spec
+			blessing: #release;
+			
+			package: 'Unicode-Character-Data' with: 'Unicode-Character-Data-SvenVanCaekenberghe.8';
+			package: 'Unicode-Stream-Support' with: 'Unicode-Stream-Support-SvenVanCaekenberghe.1';
+			package: 'Unicode-Casing' with: 'Unicode-Casing-SvenVanCaekenberghe.2';
+			package: 'Unicode-Normalization' with: 'Unicode-Normalization-SvenVanCaekenberghe.6';
+			package: 'Unicode-Collate' with: 'Unicode-Collate-HenrikSperreJohansen.5';
 
 			package: 'Unicode-Tests-Character-Data' with: 'Unicode-Tests-Character-Data-SvenVanCaekenberghe.1';
 			package: 'Unicode-Tests-Casing' with: 'Unicode-Tests-Casing-SvenVanCaekenberghe.1';
