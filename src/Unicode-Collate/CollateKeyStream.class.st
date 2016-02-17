@@ -72,33 +72,39 @@ CollateKeyStream >> collateTo: anotherKeyStream [
 CollateKeyStream >> fillBuffer [
 	"Read the next collate element into buffer"
 
-	| entry ccs ccCheck   |
-	ccCheck := [ :codePoint | (UnicodeCharacterData forCodePoint: codePoint ifAbsent: nil) ifNotNil: [ :data | data ccc > 0 ] ifNil: [ false ] ].
+	| entry ccs ccValue  |
+	ccValue := [ :codePoint :previousCCC| 
+		"http://unicode.org/reports/tr10/#S2.1.2
+		Return codePoint ccc if it is unblocked by current ccValue, 0 if blocked"
+		(UnicodeCharacterData forCodePoint: codePoint ifAbsent: nil) 
+			ifNotNil: [ :data | data ccc > previousCCC ifTrue: [ data ccc ] ifFalse: [ 0 ] ] ifNil: [ 0 ] ].
 	nfdStream next
 		ifNil: [ "Go to next level, or fill buffer with nils to return indicating end of stream"
 			level < strategy weight levels
 				ifTrue: [buffer add: 0.
 					level := level + 1.
 					nfdStream reset.
-					entry := strategy collateEntryFor: nil ]
+					entry := strategy collateEntryFor: nfdStream next ]
 				ifFalse: [^buffer add: nil; add: nil ] ]
 		ifNotNil: [ :codePoint | entry := strategy collateEntryFor: codePoint ].
 	"Resolve combined entries. A combination is either a sequence of starters, or a sequence of starters ending in combining marks. Combining marks are special; the first one that has a combination will be used. See http://unicode.org/reports/tr10/#S2.1 "
+	
 	ccs := OrderedCollection new.
-	[|	match candidate isCC|
+	[|	match candidate currentCCC |
+		currentCCC := 0.
 		candidate := nfdStream peek.
-		isCC := ccCheck value: candidate.
-		isCC 
+		currentCCC := ccValue value: candidate value: currentCCC.
+		currentCCC > 0 
 			ifFalse: [
 				 (match := entry followedBy: candidate) 
 					ifNotNil: [ :e | nfdStream next.
 						entry := e ]]
-			ifTrue: [[ isCC ] whileTrue: 
+			ifTrue: [[ currentCCC > 0 ] whileTrue: 
 				[	(match := entry followedBy: candidate) 
 						ifNotNil: [ :e | entry := e ]
 						ifNil: [ ccs add: candidate ]. 	
 					candidate := nfdStream next; peek.
-					isCC := ccCheck value: candidate]].
+					currentCCC := ccValue value: candidate value: currentCCC]].
 		 match notNil and: [ccs isEmpty]]  whileTrue.
 
 	"addLevel:in:precededBy:to: returns the number of values added to buffer.

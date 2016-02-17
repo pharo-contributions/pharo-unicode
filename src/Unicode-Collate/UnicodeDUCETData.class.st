@@ -182,7 +182,7 @@ UnicodeDUCETData class >> sequenceFrom: aCEStream [
 
 { #category : #accessing }
 UnicodeDUCETData >> collateEntryFor: aCodePoint [
-	aCodePoint ifNil: [ ^ EmptyElement ].
+	aCodePoint ifNil: [ ^ collateTable ].
 	^ collateTable
 		followedBy: aCodePoint
 		ifAbsent: [ (self hangulCollateSequenceFor: aCodePoint) ifNil: [self implicitlyWeighedCollateSequenceFor: aCodePoint ]]
