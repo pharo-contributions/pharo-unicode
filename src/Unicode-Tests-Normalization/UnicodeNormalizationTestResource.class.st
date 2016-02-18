@@ -46,6 +46,24 @@ Class {
 	#category : #'Unicode-Tests-Normalization'
 }
 
+{ #category : #running }
+UnicodeNormalizationTestResource >> ccc0CharWithCCCDecompositionPrecededByHigherCCC [
+	"Oh, tibetan...
+	The only language with codepoints that have a combining class of 0, but a canonical decomposition of code points with ccc > 0.
+ That these sort correctly when decomposed next to other CC > 0 is not tested by the official decomposition test file, so add a case for doing so here. These are also excluded for composition, see http://www.unicode.org/Public/8.0.0/ucd/CompositionExclusions.txt section 4"
+"# 0F73 TIBETAN VOWEL SIGN II
+ # 0F75 TIBETAN VOWEL SIGN UU
+ # 0F81 TIBETAN VOWEL SIGN REVERSED II"
+
+	^ SmallDictionary new
+		at: #source put: #(16r0591 16r0F81);
+		at: #NFC put: #(16r0F71 16r0F80 16r0591);
+		at: #NFD put: #(16r0F71 16r0F80 16r0591);
+		at: #NFKC put: #(16r0F71 16r0F80 16r0591);
+		at: #NFKD put: #(16r0F71 16r0F80 16r0591);
+		yourself
+]
+
 { #category : #accessing }
 UnicodeNormalizationTestResource >> data [
 	"A collection of dictionaries with keys: #source #NFC #NFD #NFKC #NFKD and #comment"
@@ -82,5 +100,7 @@ UnicodeNormalizationTestResource >> setUp [
 				ifFalse: [ 
 					| test |
 					test := self parseLine: line.
-					out nextPut: test ] ] ]
+					out nextPut: test ] ].
+			out nextPut: self ccc0CharWithCCCDecompositionPrecededByHigherCCC ].
+
 ]
