@@ -211,9 +211,11 @@ UnicodeCharacterData class >> initializeDatabase [
 	| entries |
 	entries := self loadUnicodeCharacterDatabase.
 	SpecialRanges := self extractSpecialRanges: entries.
+
 	UnicodeCharacterDatabase := IdentityDictionary new: entries size.
 	entries do: [ :each | 
-		UnicodeCharacterDatabase at: each codePoint put: each ]
+		UnicodeCharacterDatabase at: each codePoint put: each ].
+	self sanityCheck: entries
 ]
 
 { #category : #initialization }
@@ -386,18 +388,6 @@ UnicodeCharacterData class >> normalizationQuickCheck: property forString: strin
 		forCodePointStream: string readStream unicodeCodePoints
 ]
 
-{ #category : #'private - database' }
-UnicodeCharacterData class >> optimizeDatabase [
-	"Improve the distribution at a reasonable cost (optional)"
-	
-	"UnicodeCharacterData database keys in: [ :known |
-		[ known do: [ :each | each unicodeCharacterData ] ] bench ]"
-	
-	"[ 1 to: 16r10FFFF do: [ :each | UnicodeCharacterData forCodePoint: each ifAbsent: [ ] ] ] bench"
-	
-	self database growTo: 53233
-]
-
 { #category : #'private - derived normalization properties' }
 UnicodeCharacterData class >> parseDerivedNormalizationProperty: line [
 	| fields range value comment |
@@ -460,6 +450,12 @@ UnicodeCharacterData class >> resetDataSets [
 { #category : #'private - hangul' }
 UnicodeCharacterData class >> resetHangulDatabase [
 	^ HangulCache ifNotNil: [ HangulCache removeAll ]
+]
+
+{ #category : #initialization }
+UnicodeCharacterData class >> sanityCheck: newlyImportedCharacterData [
+	"Check that assumptions made of the structure in algoritmic implementations still hold."
+	 newlyImportedCharacterData do: [ :one | one decompositionWarning ifNotNil: [ :warning | warning logCr ] ].
 ]
 
 { #category : #queries }
@@ -633,6 +629,21 @@ UnicodeCharacterData >> decompositionString [
 	^ String streamContents: [ :out |
 			self decompositionMappingDo: [ :each | 
 				out nextPut: (Character codePoint: each) ] ]
+]
+
+{ #category : #private }
+UnicodeCharacterData >> decompositionWarning [
+	"Return a warning if our decomposition is on a form not handled by the decomposition implementations. 
+	We could hope the decomposition tests would be updated if this were the case, but then again, there's none exibiting correct reordering for nonStarters followed by starters with non-starter decomposition with lower combining class"
+	| first |
+	first := true.
+	self decompositionMappingDo: [ :cP | 
+		(first and: 
+		[[cP unicodeCharacterData isStarter] on: NotFound do: [true]]) ifTrue: [ ^nil].
+		first := false.
+		([cP unicodeCharacterData isStarter] on: NotFound do: [true]) ifTrue: [ ^self name, 'has decomposition not handled by implementation, #isNonStarter: must be changed to deal with #(NonStarter, Starter) decompositions to remain conformant with this version of Unicode'  ].
+		 ] .
+	^nil
 ]
 
 { #category : #accessing }
