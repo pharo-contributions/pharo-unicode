@@ -19,3 +19,15 @@ UnicodeNFDReadStream >> addMappingFor: codePoint [
 		ifFalse: [ 
 			self addToBufferCccOrdered: codePoint ]
 ]
+
+{ #category : #private }
+UnicodeNFDReadStream >> isNonStarter: codePoint [
+	"If we have a decomposition, we need to see if decomposed, we will be a nonStarter"
+	| ucd |
+	ucd := [ codePoint unicodeCharacterData ] on: NotFound do: [ nil ].
+	^(ucd notNil and: [ ucd hasCanonicalDecomposition ])
+		ifTrue: [ 
+			self isNonStarter: ucd decompositionMapping first]
+		ifFalse: [ 
+			ucd isStarter not ]
+]

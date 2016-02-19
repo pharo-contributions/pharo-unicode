@@ -36,7 +36,7 @@ UnicodeDecomposingReadStream >> addNonStarters [
 	| stop |
 	stop := false.
 	[ input atEnd | stop ] whileFalse: [ 
-		([ input peek unicodeCharacterData isStarter not ] on: NotFound do: [ false ])
+		([ self isNonStarter: input peek ] on: NotFound do: [ false ])
 			ifTrue: [ self addMappingFor: input next ]
 			ifFalse: [ stop := true ] ]
 ]
@@ -66,6 +66,14 @@ UnicodeDecomposingReadStream >> atEnd [
 UnicodeDecomposingReadStream >> initialize [
 	super initialize.
 	buffer := OrderedCollection new
+]
+
+{ #category : #private }
+UnicodeDecomposingReadStream >> isNonStarter: codePoint [
+	"Recursively check if our final decomposition is non-starters.
+	We need this since there are starter code points which decompose to a sequence of non-starters.
+	Luckily, there are currently no Starter -> #(NonStarter, X, Starter) or NonStarter -> #(Starter, X) decompositions, or the 'add trailing non-starters' step would become *very* awkward"
+	self subclassResponsibility
 ]
 
 { #category : #streaming }
