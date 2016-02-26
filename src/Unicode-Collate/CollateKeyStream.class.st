@@ -6,6 +6,8 @@ This sequence contains values on up to four levels; a collate key contains all t
 
 See http://unicode.org/reports/tr10/#Step_3 for details.
 
+Implementation choice: Instead of treating buffer as a fifo queue for collate key values that is consumed as needed, we could instead store bufferpos, and not remove read items, this would make reset operation less costly at the cost of a generally bigger bugger + instvar for bufferpos.
+
 "
 Class {
 	#name : #CollateKeyStream,
@@ -21,7 +23,12 @@ Class {
 
 { #category : #'instance creation' }
 CollateKeyStream class >> on: anNKDStream [
-	^self new initializeOn: anNKDStream
+	^ self on: anNKDStream strategy: CollateStrategy default
+]
+
+{ #category : #'instance creation' }
+CollateKeyStream class >> on: anNKDStream strategy: aStrategy [
+	^ self new initializeOn: anNKDStream strategy: aStrategy
 ]
 
 { #category : #comparison }
@@ -81,10 +88,10 @@ CollateKeyStream >> fillBuffer [
 	nfdStream next
 		ifNil: [ "Go to next level, or fill buffer with nils to return indicating end of stream"
 			level < strategy weight levels
-				ifTrue: [buffer add: 0.
+				ifTrue: [
 					level := level + 1.
 					nfdStream reset.
-					entry := strategy collateEntryFor: nfdStream next ]
+					^buffer add: 0. ]
 				ifFalse: [^buffer add: nil; add: nil ] ]
 		ifNotNil: [ :codePoint | entry := strategy collateEntryFor: codePoint ].
 	"Resolve combined entries. A combination is either a sequence of starters, or a sequence of starters ending in combining marks. Combining marks are special; the first one that has a combination will be used. See http://unicode.org/reports/tr10/#S2.1 "
@@ -126,15 +133,15 @@ CollateKeyStream >> fillBuffer [
 
 { #category : #'initialize-release' }
 CollateKeyStream >> initialize [
-	strategy := CollateStrategy default.
 	buffer := OrderedCollection new.
 	level := 1.
 ]
 
 { #category : #'initialize-release' }
-CollateKeyStream >> initializeOn: anNKDStream [
+CollateKeyStream >> initializeOn: anNKDStream strategy: aStrategy [
 
 	nfdStream := anNKDStream.
+	strategy := aStrategy
 ]
 
 { #category : #accessing }
@@ -145,8 +152,8 @@ CollateKeyStream >> next [
 
 { #category : #accessing }
 CollateKeyStream >> peek [
-	[buffer size < 2] whileTrue: [ self fillBuffer].  
-	^buffer at: 2 
+	[buffer size < 1] whileTrue: [ self fillBuffer].  
+	^buffer first 
 ]
 
 { #category : #accessing }
@@ -160,4 +167,14 @@ CollateKeyStream >> reset [
 { #category : #accessing }
 CollateKeyStream >> strategy [ 
 	^strategy
+]
+
+{ #category : #accessing }
+CollateKeyStream >> upToEnd [
+	^ Array
+		new: 100 streamContents:
+			[ :stream | 
+			[ (self next 
+				ifNotNil: [ :collateValue | stream nextPut: collateValue ]) isNil ]
+				whileFalse ]
 ]

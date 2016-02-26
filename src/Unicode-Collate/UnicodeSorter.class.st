@@ -27,37 +27,89 @@ UnicodeSorter class >> new [
 	^self strategy: CollateStrategy default
 ]
 
+{ #category : #examples }
+UnicodeSorter class >> sampleRandomWorkspace [
+"The following is an example that compares using the sorter to a more traditional approach.
+The traditional approach can be made faster by changing the CollateKeyStream buffer retention strategy."
+|testStrings sorter testStringsSorted testStringsAssocs testStringsSorted2 testStringsAssocs3 testStringsSorted3|
+testStrings := (1 to: 10000) collect: [ :i | WideString streamContents: [ :stream | 100 atRandom timesRepeat: [stream nextPut: 16r10FFFF atRandom asCharacter] ] ].
+
+"Using sorter"
+sorter := UnicodeSorter new.
+testStringsSorted := sorter sort: testStrings copy.
+
+"Classic approach"
+testStringsAssocs := testStrings copy collect: [ :each | (CollateKeyStream on: each readStream unicodeCodePoints unicodeNFD) -> each ].
+
+testStringsAssocs sort: [ :a :b | a key <= b key ].
+testStringsSorted2 := testStringsAssocs collect: #value.
+
+
+^testStringsSorted = testStringsSorted2
+]
+
+{ #category : #examples }
+UnicodeSorter class >> sampleWorstCaseWorkspace [
+"The following is an example of the worst case for the sort-per-collate-value approach; all Strings are equal, that is, we need to sort the full range string size times before concluding the ordering should stay as is"
+|testString testStrings sorter testStringsSorted testStringsAssocs testStringsSorted2|
+testString := WideString streamContents: [ :stream | 100 atRandom timesRepeat: [stream nextPut: 16r10FFFF atRandom asCharacter] ] .
+testStrings := (1 to: 10000) collect: [ :i | testString].
+
+"Using sorter"
+sorter := UnicodeSorter new.
+testStringsSorted := sorter sort: testStrings copy.
+
+"Classic approach"
+testStringsAssocs := testStrings copy collect: [ :each | (CollateKeyStream on: each readStream unicodeCodePoints unicodeNFD) -> each ].
+
+testStringsAssocs sort: [ :a :b | a key <= b key ].
+testStringsSorted2 := testStringsAssocs collect: #value.
+
+^testStringsSorted = testStringsSorted2
+]
+
 { #category : #'instance creation' }
 UnicodeSorter class >> strategy: aCollateStrategy [
 	^self basicNew initializeFor: aCollateStrategy
 ]
 
 { #category : #'initialize - release' }
-UnicodeSorter >> initialize: aStrategy [
+UnicodeSorter >> initializeFor: aStrategy [
 	strategy := aStrategy
 ]
 
 { #category : #'as yet unclassified' }
 UnicodeSorter >> sort: aStringCollection [
-	| collateStreams |
-	collateStreams := aStringCollection collect: [ :aString | CollateKeyStream on: aString collateTable: strategy collateTable ].
-	self sort: collateStreams from: 1 to: collateStreams size.
-	^collateStreams collect: #contents
+
+	"Schwarz the collection"
+	1 to: aStringCollection size do: [ :anIndex | |aString|
+			aString := aStringCollection at: anIndex.
+			aStringCollection at: anIndex put: (CollateKeyStream on: aString readStream unicodeCodePoints unicodeNFD strategy: strategy) -> aString ].
+	self sort: aStringCollection from: 1 to: aStringCollection size.
+	"Unscwartz"
+	1 to: aStringCollection size do: [ :anIndex | |anAssoc|
+			anAssoc := aStringCollection at: anIndex.
+			aStringCollection at: anIndex put: anAssoc value ].
+		^aStringCollection
 ]
 
 { #category : #'private - sort' }
-UnicodeSorter >> sort: collateStreams from: start to: end [
+UnicodeSorter >> sort: collateStreamsAndStrings from: start to: end [
 	| rangeStart element |
-	collateStreams mergeSortFrom: start to: end by: [ :a :b | a peek < b peek ].
+	collateStreamsAndStrings mergeSortFrom: start to: end by: [ :a :b | a key peek isNil or: [b key peek notNil and: [a key peek <= b key peek]] ].
 	rangeStart := start.
-	element := (collateStreams at: rangeStart) next.
+	element := (collateStreamsAndStrings at: rangeStart) key next.
+	element ifNil: ["If first element is nil, we've checked range to end of streams, and the whole range is equal.
+		"^nil ].
 	start + 1 to: end do:
 		[ :i | 
-		element != (element := (collateStreams at: i) next)
+		(element ~= (element := (collateStreamsAndStrings at: i) key next))
 			ifTrue:
 				[ | rangeEnd |
 				rangeEnd := i - 1.
-				rangeEnd - rangeStart > 1
-					ifTrue: [ self sort: collateStreams from: rangeStart to: rangeEnd.
-						rangeStart := i ] ] ]
+				rangeEnd - rangeStart > 0
+					ifTrue: [ self sort: collateStreamsAndStrings from: rangeStart to: rangeEnd.].
+				rangeStart := i  ] ].
+	end - rangeStart > 0
+					ifTrue: [ self sort: collateStreamsAndStrings from: rangeStart to: end]
 ]
