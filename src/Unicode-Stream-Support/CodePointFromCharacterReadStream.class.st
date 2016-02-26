@@ -53,6 +53,11 @@ CodePointFromCharacterReadStream >> peek [
 	^ readStream peek ifNotNil: [ :character | character codePoint ]
 ]
 
+{ #category : #streaming }
+CodePointFromCharacterReadStream >> reset [
+	^ readStream reset
+]
+
 { #category : #converting }
 CodePointFromCharacterReadStream >> unicodeCharacters [
 	"Return a CharacterFromCodePointReadStream over the receiver that streams over Characters"
