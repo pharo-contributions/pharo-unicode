@@ -18,7 +18,7 @@ CodePointFromCharacterReadStream >> unicodeNFC [
 CodePointFromCharacterReadStream >> unicodeNFD [
 	"Return a UnicodeNFDReadStream over the receiver that streams over Integer code points after decomposing them canonically"
 	
-	^ UnicodeNFDReadStream on: self
+	^ UnicodeDecomposingReadStream nfdFormOn: self
 ]
 
 { #category : #'*unicode-normalization' }
@@ -32,5 +32,5 @@ CodePointFromCharacterReadStream >> unicodeNFKC [
 CodePointFromCharacterReadStream >> unicodeNFKD [
 	"Return a UnicodeNFKDReadStream over the receiver that streams over Integer code points after decomposing them compatibly"
 	
-	^ UnicodeNFKDReadStream on: self
+	^ UnicodeDecomposingReadStream nfkdFormOn: self
 ]

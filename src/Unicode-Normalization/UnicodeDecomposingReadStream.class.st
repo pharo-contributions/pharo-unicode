@@ -1,9 +1,8 @@
 "
-I am UnicodeDecomposingReadStream. I wrap an input read stream of code points and produce a decomposed normalized stream of code points. I am abstract.
+UnicodeDecomposingReadStream  is a streaming implementation of  the Unicode Normalization Algorithm for the Decomposed Forms.
+It wraps an input read stream of code points and produces a  stream of code points in the decomposed  form the stream was created as. 
 
-An alternative, non-streaming implementation of the process that I implement can be found in UnicodeDecomposer.
-
-My two concrete subclasses implement Canonical and Compatible decomposition.
+An  alternate implementation of the same, operating on strings, rather than streams, can be found in UnicodeDecomposer.
 
 Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
@@ -12,49 +11,31 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'input',
-		'buffer'
+		'buffer',
+		'form'
 	],
 	#category : #'Unicode-Normalization'
 }
 
 { #category : #initialization }
-UnicodeDecomposingReadStream class >> on: codePointReadStream [
+UnicodeDecomposingReadStream class >> form: aDecomposedNormalizationForm on: codePointReadStream [
 	^ self new
-		on: codePointReadStream;
+		form: aDecomposedNormalizationForm on: codePointReadStream;
 		yourself
 ]
 
-{ #category : #private }
-UnicodeDecomposingReadStream >> addMappingFor: codePoint [
-	"Recursively expand codePoint to buffer"
-	self subclassResponsibility
+{ #category : #initialization }
+UnicodeDecomposingReadStream class >> nfdFormOn: codePointReadStream [
+	^ self 
+		form: UnicodeNFD
+		on: codePointReadStream
 ]
 
-{ #category : #private }
-UnicodeDecomposingReadStream >> addNonStarters [
-	"Peek forward for additional non-starters and add them to buffer, if any"
-	| stop |
-	stop := false.
-	[ input atEnd | stop ] whileFalse: [ 
-		([ self isNonStarter: input peek ] on: NotFound do: [ false ])
-			ifTrue: [ self addMappingFor: input next ]
-			ifFalse: [ stop := true ] ]
-]
-
-{ #category : #private }
-UnicodeDecomposingReadStream >> addToBufferCccOrdered: codePoint [
-	| ccc index stop otherCCC |
-	ccc := [ codePoint unicodeCharacterData ccc ] on: NotFound do: [ 0 ].
-	index := buffer size.
-	ccc = 0 
-		ifFalse: [
-			stop := false.
-			[ index > 0 & stop not ] whileTrue: [ 
-				otherCCC := [ (buffer at: index) unicodeCharacterData ccc ] on: NotFound do: [ 0 ].
-				ccc < otherCCC
-					ifTrue: [ index := index - 1 ]
-					ifFalse: [ stop := true ] ] ].
-	buffer add: codePoint afterIndex: index
+{ #category : #initialization }
+UnicodeDecomposingReadStream class >> nfkdFormOn: codePointReadStream [
+	^ self 
+		form: UnicodeNFKD
+		on: codePointReadStream
 ]
 
 { #category : #streaming }
@@ -63,17 +44,15 @@ UnicodeDecomposingReadStream >> atEnd [
 ]
 
 { #category : #initialization }
+UnicodeDecomposingReadStream >> form: aDecomposedNormalizationForm on: codePointReadStream [
+	form := aDecomposedNormalizationForm.
+	input := codePointReadStream 
+]
+
+{ #category : #initialization }
 UnicodeDecomposingReadStream >> initialize [
 	super initialize.
 	buffer := OrderedCollection new
-]
-
-{ #category : #private }
-UnicodeDecomposingReadStream >> isNonStarter: codePoint [
-	"Recursively check if our final decomposition is non-starters.
-	We need this since there are starter code points which decompose to a sequence of non-starters.
-	Luckily, there are currently no Starter -> #(NonStarter, X, Starter) or NonStarter -> #(Starter, X) decompositions, or the 'add trailing non-starters' step would become *very* awkward"
-	self subclassResponsibility
 ]
 
 { #category : #streaming }
@@ -87,8 +66,8 @@ UnicodeDecomposingReadStream >> next [
 UnicodeDecomposingReadStream >> nextChunk [
 	input atEnd
 		ifFalse: [  
-			self addMappingFor: input next.
-			self addNonStarters.
+			form addMapping: input next to: buffer.
+			form addNonStartersFrom: input to: buffer.
 			"The additions to the buffer above were done respecting the CCC order, so we're done" ]
 ]
 
