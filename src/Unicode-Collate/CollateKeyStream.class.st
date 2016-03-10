@@ -68,8 +68,8 @@ CollateKeyStream >> collateTo: anotherKeyStream [
 	self reset.
 	anotherKeyStream reset.
 	[(a := self next) = (b := anotherKeyStream next) and: [b notNil]] whileTrue.
-	^a ifNil:    [ b ifNil: [0] ifNotNil: [ 1] ]
-		ifNotNil: [b ifNil: [-1] ifNotNil: [
+	^a ifNil:    [ b ifNil: [0] ifNotNil: [ -1] ]
+		ifNotNil: [b ifNil: [1] ifNotNil: [
 				a < b ifTrue: [-1]
 						ifFalse: [a = b ifTrue: [0]
 											 ifFalse: [1]]]].
@@ -127,7 +127,8 @@ CollateKeyStream >> fillBuffer [
 	"TODO: Check that no weigings does alterations on the boundaries we fill buffer, so nil can be used safely for first element "
 	(nonStarters
 		inject: (strategy weight addLevel: level in: entry precededBy: nil to: buffer)
-		into: [ :sub :next | sub + (strategy weight addLevel: level in: (entry := next) precededBy: entry to: buffer) ]) = 0
+		into: [ :sub :next | sub + (strategy weight addLevel: level in: next precededBy: entry to: buffer).
+			entry := next. sub. ]) = 0
 		ifTrue: [ self fillBuffer ] 
 ]
 

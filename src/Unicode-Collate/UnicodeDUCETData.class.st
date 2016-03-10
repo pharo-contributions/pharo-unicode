@@ -199,23 +199,16 @@ UnicodeDUCETData >> hangulCollateSequenceFor: aCodePoint [
 { #category : #'private - implicit weighing' }
 UnicodeDUCETData >> implicitWeightBaseFor: aCodePoint [
 	"Implicit weight base value: http://unicode.org/reports/tr10/#Implicit_Weights , table 16"
-
-	"Basic block"
-	(((16r4E00 to: 16r9FFF) includes: aCodePoint) or: 
-	"Compatability Ideographs"
-	[(16rF900 to: 16rFAFF) includes: aCodePoint ]) ifTrue: [^16rFB40 ].
-	"Not ALL of the codepoints in these blocks have the property Unified Ideograph, but use this for now, later on we can import from Unihan.zip to fix all cases if needed"
-	"CJK extension A"
-	(((16r3400 to: 16r4DBF) includes: aCodePoint) or: 
-	["CJK extension B"
-	((16r20000 to: 16r2A6DF) includes: aCodePoint) or: 
-	["CJK extension C"
-	((16r2A700 to: 16r2B73F) includes: aCodePoint) or: 
-	["CJK extension D"
-	((16r2B740 to: 16r2B81F) includes: aCodePoint) or: 
-	["CJK extension D"
-	(16r2B820 to: 16r2CEAF) includes: aCodePoint]]]]) ifTrue: [^16rFB80].
-	"Anything else"
+	"Codepoints in CJK ranges have different weight from the rest"
+	UnicodeCharacterData specialRanges do: 
+		[:specialRange | (specialRange first codePoint <= aCodePoint and: 
+							[ specialRange last codePoint >= aCodePoint and: 
+							[specialRange first name beginsWith: '<CJK Ideograph' ]]) 
+								ifTrue: ["Only base set has $, after stem, rest are extension sets"
+								^(specialRange first name at: 15) = $, 
+									ifTrue: [ 16rFB40  ] 
+									ifFalse: [16rFB80 ] ]].
+	"Everything else"
 	^16rFBC0
 ]
 
