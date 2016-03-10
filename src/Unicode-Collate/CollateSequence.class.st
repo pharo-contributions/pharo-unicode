@@ -7,6 +7,8 @@ Each collate element is stored as a word value, on the format:
 [31,27 ][        26       ][ 25,16][ 15, 0  ].
 
 If the DUCET or CLDR in newer versions go outside this range, adjustments to the class initialization will be necessary, hopefully 32bits will still be enough to sort the (strictly speaking, smaller) Unicode range.
+
+Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
 	#name : #CollateSequence,

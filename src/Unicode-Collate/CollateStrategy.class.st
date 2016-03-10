@@ -5,6 +5,8 @@ At the moment, this includes:
 
 - The collate table to use
 - Variable weight setting  http://unicode.org/reports/tr10/#Variable_Weighting
+
+Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
 	#name : #CollateStrategy,
@@ -37,7 +39,7 @@ CollateStrategy class >> forLocale: aLocale [
 
 { #category : #weighing }
 CollateStrategy >> blanked [
-	variableWeight := BlankedWeighing
+	variableWeight := BlankedWeighing implementor
 ]
 
 { #category : #collating }
@@ -88,17 +90,17 @@ CollateStrategy >> initialize [
 
 { #category : #weighing }
 CollateStrategy >> nonIgnorable [
-	variableWeight := NonIgnorableWeighing
+	variableWeight := NonIgnorableWeighing implementor
 ]
 
 { #category : #weighing }
 CollateStrategy >> shiftTrimmed [
-	variableWeight := ShiftTrimmedWeighing
+	variableWeight := ShiftTrimmedWeighing implementor
 ]
 
 { #category : #weighing }
 CollateStrategy >> shifted [
-	variableWeight := ShiftedWeighing
+	variableWeight := ShiftedWeighing implementor
 ]
 
 { #category : #accessing }
