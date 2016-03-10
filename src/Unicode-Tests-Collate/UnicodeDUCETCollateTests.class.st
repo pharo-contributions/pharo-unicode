@@ -2,6 +2,9 @@
 Tests collation is implemented correctly according to Unicode algorithm under different weighing schemes,  using official test files.
 
 The files are large, the tests are for the ordering of about 200,000 code point sequences, so expect them to take awhile.
+
+
+Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
 	#name : #UnicodeDUCETCollateTests,

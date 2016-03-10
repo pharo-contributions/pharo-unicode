@@ -1,8 +1,10 @@
 "
 I hold the contents of CollationTest_SHIFTED_SHORT.txt and CollationTest_NON_IGNORABLE_SHORT.txt,  loaded and unpacked from a URL: http://www.unicode.org/Public/UCA/latest/CollationTest.zip.
 
-If running this test often, download and unzio CollationTest.zip to the image folder, and the data will be loaded from disk instead of over the network
+If running this test often, download and unzip CollationTest.zip to the image folder, and the data will be loaded from disk instead of over the network
 
+
+Part of the Pharo Unicode project (http://unicode.pharo.org). Copyright (C) 2015, 2016 the Pharo Unicode contributors (Sven Van Caekenberghe, Henrik Sperre Johansen). Licensed under the MIT license (https://en.wikipedia.org/wiki/MIT_License) and for usage within Pharo (http://pharo.org).
 "
 Class {
 	#name : #UnicodeCollateTestResource,
