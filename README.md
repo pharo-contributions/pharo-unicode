@@ -8,4 +8,21 @@ For additional information, see [An Implementation of Unicode Normalization](htt
 
 Authors: Sven Van Caekenberghe, Henrik Sperre Johansen
 
+
+## Installation
+
+Unicode for Pharo has been tested on Pharo 8.
+
+To install, evaluate:
+
+```smalltalk
+Metacello new 
+	repository: 'github://feenkcom/pharo-unicode/src';
+	baseline: 'Unicode';
+	load.
+```
+
+
+## Historical
+
 This is a port of the project from SmalltalkHub.  The original project is at <http://smalltalkhub.com/#!/~Pharo/Unicode>.
