@@ -17,7 +17,7 @@ To install, evaluate:
 
 ```smalltalk
 Metacello new 
-	repository: 'github://feenkcom/pharo-unicode/src';
+	repository: 'github://pharo-contributions/pharo-unicode/src';
 	baseline: 'Unicode';
 	load.
 ```
