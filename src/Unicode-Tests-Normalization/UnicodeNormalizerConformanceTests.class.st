@@ -42,7 +42,7 @@ UnicodeNormalizerConformanceTests >> testNFC [
 		result = (spec at: #NFC)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFC {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFC {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -58,7 +58,7 @@ UnicodeNormalizerConformanceTests >> testNFCStreaming [
 		result = (spec at: #NFC)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFCStreaming {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFCStreaming {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -76,7 +76,7 @@ UnicodeNormalizerConformanceTests >> testNFCString [
 		result = (spec at: #NFC)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFCString {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFCString {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -93,7 +93,7 @@ UnicodeNormalizerConformanceTests >> testNFD [
 		result = (spec at: #NFD)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFD {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFD {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -109,7 +109,7 @@ UnicodeNormalizerConformanceTests >> testNFDStreaming [
 		result = (spec at: #NFD)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFDStreaming {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFDStreaming {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -127,7 +127,7 @@ UnicodeNormalizerConformanceTests >> testNFDString [
 		result = (spec at: #NFD)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFDString {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFDString {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -146,7 +146,7 @@ UnicodeNormalizerConformanceTests >> testNFKC [
 		result = (spec at: #NFKC)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFKC {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFKC {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -162,7 +162,7 @@ UnicodeNormalizerConformanceTests >> testNFKCStreaming [
 		result = (spec at: #NFKC)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFKCStreaming {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFKCStreaming {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -180,7 +180,7 @@ UnicodeNormalizerConformanceTests >> testNFKCString [
 		result = (spec at: #NFKC)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFKCString {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFKCString {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -197,7 +197,7 @@ UnicodeNormalizerConformanceTests >> testNFKD [
 		result = (spec at: #NFKD)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFKD {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFKD {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -213,7 +213,7 @@ UnicodeNormalizerConformanceTests >> testNFKDStreaming [
 		result = (spec at: #NFKD)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFKDStreaming {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFKDStreaming {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
@@ -231,7 +231,7 @@ UnicodeNormalizerConformanceTests >> testNFKDString [
 		result = (spec at: #NFKD)
 			ifTrue: [ succeeded := succeeded + 1 ]
 			ifFalse: [ failed add: spec -> result ] ].
-	self crLog: ('#testNFKDString {1}/{2} ({3}%)' format: { 
+	self crTrace: ('#testNFKDString {1}/{2} ({3}%)' format: { 
 		succeeded. self specification size. 
 		succeeded / self specification size percent asFloat printShowingDecimalPlaces: 2 }).
 	self assert: failed isEmpty
